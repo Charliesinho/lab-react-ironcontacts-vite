@@ -1,34 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
+import React, { useState } from 'react';
+import contacts from "./contacts.json"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [firstSix, setFirstFive] = useState(contacts.slice(0,6));
+  console.log(firstSix);
+  const [remContacts, setRemContacts] = useState(contacts.slice(7));
+  
+   
 
-  return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+  function getRandomContact() {
+    let randomIndex = Math.floor(Math.random() * remContacts.length);
+    let randomContact = remContacts[randomIndex];
+    setFirstFive([...firstSix, randomContact])
+    let filteredArr = remContacts.filter((elem) => {
+      if (elem.name !== randomContact.name) {
+        return elem;
+      }
+    })
+    setRemContacts(filteredArr)
+  }
+
+  function sortByName() {
+    const sorted = [...firstSix];
+    sorted.sort((a, b) => a.name > b.name ? 1 : -1);
+    console.log(sorted)
+    setFirstFive(sorted)
+  }
+  function sortByPop() {
+    const sorted = [...firstSix];
+    sorted.sort((a, b) => a.popularity < b.popularity ? 1 : -1);
+    console.log(sorted)
+    setFirstFive(sorted)
+  }
+
+
+  return(
+  <div className="App">
+  <h1> IronContacts </h1>
+  <button onClick={getRandomContact}> Add random </button>
+  <button onClick={sortByName}> Sort by name </button>
+  <button onClick={sortByPop}> Sort by Popularity </button>
+<table id='table '>
+  <thead>
+    <tr>
+      <th>Picture</th>
+      <th>Name</th>
+      <th>Popularity</th>
+      <th>Won Oscar</th>
+      <th>Won Emmy</th>
+    </tr>
+  </thead>
+  <tbody>
+    {firstSix.map((celebrity) => {
+        return (
+          <tr key={celebrity.id} className="table">
+            <td>
+                <img class="img" src={celebrity.pictureUrl} alt="" />
+              </td>
+            <td>{celebrity.name}</td>
+            <td>{celebrity.popularity}</td>
+            <td>{celebrity.wonOscar ? '🏆' : ''}</td>
+            <td>{celebrity.wonEmmy ? '🏆' : ''}</td>
+            <button onClick={() => {
+              const newArr = firstSix.filter((elem) => elem.id !== celebrity.id);
+              setFirstFive([...newArr])
+              console.log("deleted")
+            }}> Delete</button>
+          </tr>
+        )
+      })}
+    </tbody> 
+</table>
+</div>
+)
 }
-
 export default App
